@@ -1,0 +1,9 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_win_open,,,"W3Schoolsのウィンドウ操作テストページにアクセス"
+2,クリック,#runbtn,,,実行ボタンをクリック
+3,クリック,button,,,「Try it」ボタンをクリックして新しいウィンドウを開く
+4,newwindow,,,,,新しく開いたウィンドウに切り替え
+5,確認,title,W3Schools,,新しいウィンドウのタイトルを確認
+6,スクリーンショット,new_window,,,新しいウィンドウをキャプチャ
+7,closewindow,,,,,新しいウィンドウを閉じる
+8,確認,title,Tryit,,元のウィンドウに戻ったことを確認

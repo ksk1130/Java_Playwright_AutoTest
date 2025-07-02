@@ -1,0 +1,17 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://example.com,,,"サンプルサイトにアクセス"
+2,入力,#username,testuser,,ユーザー名を入力
+3,入力,#password,password123,,パスワードを入力
+4,選択,#country,Japan,,国を選択
+5,選択,select[name='prefecture'],東京都,,都道府県を選択
+6,クリック,#openHelp,,,ヘルプウィンドウを開く
+7,newwindow,,,,,新しく開いたヘルプウィンドウに切り替え
+8,確認,title,Help,,ヘルプページであることを確認
+9,クリック,#closeBtn,,,ヘルプウィンドウの閉じるボタンをクリック
+10,window,,0,,元のウィンドウ（インデックス0）に戻る
+11,iframe,#paymentFrame,,,決済フレームに切り替え
+12,入力,#cardNumber,1234567890123456,,クレジットカード番号を入力
+13,main,,,,,メインフレームに戻る
+14,クリック,#loginButton,,,ログインボタンをクリック
+15,確認,title,Welcome,,ページタイトルに「Welcome」が含まれることを確認
+16,スクリーンショット,login_success,,,ログイン成功画面をキャプチャ

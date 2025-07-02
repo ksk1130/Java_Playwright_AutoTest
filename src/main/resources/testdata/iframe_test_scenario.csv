@@ -1,0 +1,15 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://www.w3schools.com/html/tryit.asp?filename=tryhtml_iframe,,,"W3Schoolsのiframeテストページにアクセス"
+2,iframe,#iframeResult iframe,,,iframeに切り替え
+3,入力,input[name='fname'],太郎,,名前を入力
+4,入力,input[name='lname'],山田,,姓を入力
+5,クリック,input[type='submit'],,,送信ボタンをクリック
+6,main,,,,,メインフレームに戻る
+7,スクリーンショット,iframe_test,,,テスト結果をキャプチャ
+8,クリック,#openNewWindow,,,新しいウィンドウを開く（仮想）
+9,newwindow,,,,,新しく開いたウィンドウに切り替え
+10,iframe,#paymentFrame,,,新しいウィンドウ内のiframeに切り替え
+11,入力,#cardNumber,1234567890123456,,iframe内のカード番号を入力
+12,main,,,,,新しいウィンドウのメインフレームに戻る
+13,closewindow,,,,,新しいウィンドウを閉じる
+14,window,,0,,元のウィンドウに戻る

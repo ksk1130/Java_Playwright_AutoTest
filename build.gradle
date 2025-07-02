@@ -1,0 +1,94 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+}
+
+group = 'com.example'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Playwright
+    implementation 'com.microsoft.playwright:playwright:1.44.0'
+    
+    // JUnit 4 - mainでも使用するためimplementationに変更
+    implementation 'junit:junit:4.13.2'
+    
+    // Hamcrest for better assertions - mainでも使用するためimplementationに変更
+    implementation 'org.hamcrest:hamcrest:2.2'
+    
+    // JSON handling
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'ch.qos.logback:logback-classic:1.4.8'
+    
+    // Configuration
+    implementation 'org.apache.commons:commons-configuration2:2.9.0'
+    implementation 'commons-beanutils:commons-beanutils:1.9.4'
+    
+    // Test utilities
+    testImplementation 'org.awaitility:awaitility:4.2.0'
+}
+
+test {
+    useJUnit()
+    
+    // Playwright specific JVM args
+    jvmArgs = [
+        '--add-opens=java.base/java.lang=ALL-UNNAMED',
+        '--add-opens=java.base/java.util=ALL-UNNAMED'
+    ]
+    
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+    
+    // System properties for test configuration
+    systemProperty 'playwright.browser', System.getProperty('playwright.browser', 'chrome')
+    systemProperty 'playwright.headless', System.getProperty('playwright.headless', 'false')
+    systemProperty 'playwright.slowMo', System.getProperty('playwright.slowMo', '0')
+    systemProperty 'playwright.timeout', System.getProperty('playwright.timeout', '30000')
+    systemProperty 'playwright.useSystemBrowser', System.getProperty('playwright.useSystemBrowser', 'true')
+}
+
+application {
+    mainClass = 'com.example.playwright.TestRunner'
+}
+
+// Custom task to run tests with specific system browser
+task runChrome(type: Test) {
+    systemProperty 'playwright.browser', 'chrome'
+    systemProperty 'playwright.headless', 'false'
+    systemProperty 'playwright.useSystemBrowser', 'true'
+}
+
+task runFirefox(type: Test) {
+    systemProperty 'playwright.browser', 'firefox'
+    systemProperty 'playwright.headless', 'false'
+    systemProperty 'playwright.useSystemBrowser', 'true'
+}
+
+task runEdge(type: Test) {
+    systemProperty 'playwright.browser', 'edge'
+    systemProperty 'playwright.headless', 'false'
+    systemProperty 'playwright.useSystemBrowser', 'true'
+}
+
+// Task to run tests headless with system browser
+task runHeadless(type: Test) {
+    systemProperty 'playwright.headless', 'true'
+    systemProperty 'playwright.useSystemBrowser', 'true'
+}

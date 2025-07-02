@@ -1,0 +1,7 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://www.w3schools.com/tags/tryit.asp?filename=tryhtml_select,,,"W3Schoolsのselect要素テストページにアクセス"
+2,クリック,#runbtn,,,実行ボタンをクリック
+3,選択,#cars,saab,,Saabを選択
+4,確認,#cars,saab,選択されたオプションがSaabであることを確認
+5,選択,#cars,mercedes,,Mercedesに変更
+6,スクリーンショット,dropdown_test,,,選択結果をキャプチャ
