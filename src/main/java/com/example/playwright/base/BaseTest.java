@@ -23,20 +23,23 @@ public abstract class BaseTest {
     protected BrowserContext context;
     protected Page page;
     protected TestConfig config;
-    
+
     @Before
-    public void setUp() {
+    public void setUp(String userDirPath) {
         config = TestConfig.getInstance();
         logger.info("=== テストセットアップ開始 ===");
-        
+
         // Playwrightインスタンスを作成
         playwright = Playwright.create();
-        
+
         // ブラウザを起動（システムにインストール済みのブラウザを使用）
         BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions()
-            .setHeadless(config.isHeadless())
-            .setSlowMo(config.getSlowMo());
-            
+                .setHeadless(config.isHeadless())
+                .setSlowMo(config.getSlowMo());
+
+        BrowserType browserType = getBrowserType();
+        browserType.launchPersistentContext(Paths.get(userDirPath));
+
         // システムブラウザを使用する場合はチャンネルを設定
         if (config.useSystemBrowser()) {
             String channel = getSystemBrowserChannel(config.getBrowser());
@@ -44,34 +47,34 @@ public abstract class BaseTest {
                 launchOptions.setChannel(channel);
             }
         }
-            
-        browser = getBrowserType().launch(launchOptions);
-        
+
+        browser = browserType.launch(launchOptions);
+
         // ブラウザコンテキストを作成
         Browser.NewContextOptions contextOptions = new Browser.NewContextOptions()
-            .setViewportSize(1920, 1080);
-            
+                .setViewportSize(1920, 1080);
+
         context = browser.newContext(contextOptions);
-        
+
         // デフォルトタイムアウトを設定
         context.setDefaultTimeout(config.getTimeout());
-        
+
         // ページを作成
         page = context.newPage();
-        
+
         // 追加のセットアップがあれば実行
         additionalSetUp();
-        
+
         logger.info("=== テストセットアップ完了 ===");
     }
-    
+
     @After
     public void tearDown() {
         logger.info("=== テストクリーンアップ開始 ===");
-        
+
         // 追加のクリーンアップがあれば実行
         additionalTearDown();
-        
+
         // リソースを解放
         if (page != null) {
             page.close();
@@ -85,10 +88,10 @@ public abstract class BaseTest {
         if (playwright != null) {
             playwright.close();
         }
-        
+
         logger.info("=== テストクリーンアップ完了 ===");
     }
-    
+
     /**
      * ブラウザタイプを取得
      */
@@ -100,35 +103,35 @@ public abstract class BaseTest {
             default -> playwright.chromium();
         };
     }
-    
+
     /**
      * システムにインストール済みのブラウザチャンネルを取得
      */
     private String getSystemBrowserChannel(String browserName) {
         String lowerBrowserName = browserName.toLowerCase();
         return switch (lowerBrowserName) {
-            case "chrome", "chromium" -> "chrome";  // Google Chrome
-            case "firefox" -> null;  // システムFirefox（チャンネル指定なし）
-            case "edge" -> "msedge";  // Microsoft Edge
-            case "webkit", "safari" -> null;  // WebKit（チャンネル指定なし）
-            default -> "chrome";  // デフォルトはChrome
+            case "chrome", "chromium" -> "chrome"; // Google Chrome
+            case "firefox" -> null; // システムFirefox（チャンネル指定なし）
+            case "edge" -> "msedge"; // Microsoft Edge
+            case "webkit", "safari" -> null; // WebKit（チャンネル指定なし）
+            default -> "chrome"; // デフォルトはChrome
         };
     }
-    
+
     /**
      * 子クラスで追加のセットアップが必要な場合にオーバーライド
      */
     protected void additionalSetUp() {
         // デフォルト実装は空
     }
-    
+
     /**
      * 子クラスで追加のクリーンアップが必要な場合にオーバーライド
      */
     protected void additionalTearDown() {
         // デフォルト実装は空
     }
-    
+
     /**
      * 指定されたURLにナビゲート
      */
@@ -139,21 +142,21 @@ public abstract class BaseTest {
             page.navigate(config.getBaseUrl() + url);
         }
     }
-    
+
     /**
      * スクリーンショットを撮影
      */
     protected byte[] takeScreenshot() {
         return page.screenshot();
     }
-    
+
     /**
      * フルページスクリーンショットを撮影
      */
     protected byte[] takeFullPageScreenshot() {
         return page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
     }
-    
+
     /**
      * スクリーンショットをファイルに保存
      */

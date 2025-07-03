@@ -11,19 +11,46 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays;
+import java.io.FileInputStream;
 
 /**
  * CSV駆動型テストの基底クラス
  */
-public abstract class CSVDataDrivenTest extends BaseTest {
+public class CSVDataDrivenTest extends BaseTest {
     protected static final Logger logger = LoggerFactory.getLogger(CSVDataDrivenTest.class);
     protected TestActionExecutor actionExecutor;
-    
+
+    public static void main(String[] args) {
+
+        // コマンドラインからCSVファイルを指定して単体実行可能
+        logger.info("CSVDataDrivenTest main method called. コマンドライン実行モード");
+        if (args.length == 0) {
+            logger.error("CSVファイル名（フルパス）を指定してください。");
+            System.exit(1);
+        }
+        String csvFileName = args[0];
+        CSVDataDrivenTest runner = new CSVDataDrivenTest() {
+            @Override
+            protected void additionalSetUp() {
+                actionExecutor = new TestActionExecutor(page);
+            }
+        };
+        try {
+            runner.setUp(args[1]);
+            runner.executeTestStepsFromCsv(csvFileName);
+        } catch (Exception e) {
+            logger.error("テスト実行中にエラー: {}", e.getMessage(), e);
+            System.exit(2);
+        } finally {
+            runner.tearDown();
+        }
+    }
+
     @Override
     protected void additionalSetUp() {
         actionExecutor = new TestActionExecutor(page);
     }
-    
+
     /**
      * CSVファイルからテストステップを実行
      */
@@ -43,23 +70,23 @@ public abstract class CSVDataDrivenTest extends BaseTest {
             logger.info("実行中: ステップ {} - {}", stepNo, description);
             try {
                 actionExecutor.executeAction(action, element, inputValue);
-                Thread.sleep(1000); // 各ステップ間で1秒待機
+                Thread.sleep(10000); // 各ステップ間で10秒待機
             } catch (Exception e) {
                 logger.error("ステップ {} でエラー: {}", stepNo, e.getMessage(), e);
                 throw new RuntimeException("Test step failed: " + stepNo, e);
             }
         }
     }
-    
+
     /**
-     * CSVファイルからデータを読み込む
+     * CSVファイルからデータを読み込む（フルパス対応）
+     * 
+     * @param csvFileName フルパスのCSVファイル名
+     * @return 各行をMap化したリスト
      */
     private List<Map<String, String>> loadCsvData(String csvFileName) {
         try {
-            InputStream is = getClass().getClassLoader().getResourceAsStream("testdata/" + csvFileName);
-            if (is == null) {
-                throw new RuntimeException("CSV file not found: " + csvFileName);
-            }
+            InputStream is = new FileInputStream(csvFileName); // フルパスでファイルを開く
             List<Map<String, String>> data = new ArrayList<>();
             InputStreamReader reader = new InputStreamReader(is, "UTF-8");
             BufferedReader bufferedReader = new BufferedReader(reader);

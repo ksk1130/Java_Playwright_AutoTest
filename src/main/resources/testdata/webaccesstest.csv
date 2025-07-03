@@ -1,0 +1,4 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://www.k-hitorigoto.online/,,,"ページにアクセス"
+2,待機,#box2-inner > div.hatena-module.hatena-module-recent-entries > div.hatena-module-body > ul > li:nth-child(2) > div > a.urllist-title-link.recent-entries-title-link.urllist-title.recent-entries-title,,,Javaでカレントディレクトリを取得するが表示されるまで待機
+3,クリック,#box2-inner > div.hatena-module.hatena-module-recent-entries > div.hatena-module-body > ul > li:nth-child(2) > div > a.urllist-title-link.recent-entries-title-link.urllist-title.recent-entries-title,,,Javaでカレントディレクトリを取得するをクリック
