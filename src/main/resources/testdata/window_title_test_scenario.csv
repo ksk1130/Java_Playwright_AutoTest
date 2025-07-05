@@ -1,0 +1,11 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://www.w3schools.com/html/html_examples.asp,,,"W3Schoolsの例サイトにアクセス"
+2,クリック,"a[href*='tryit']",,,「Try it Yourself」リンクをクリックしてエディタウィンドウを開く
+3,newwindow,Tryit Editor,,,「Tryit Editor」タイトルの新しいウィンドウに切り替え
+4,確認,title,Tryit,,エディタウィンドウであることを確認
+5,スクリーンショット,tryit_editor,,,エディタ画面をキャプチャ
+6,クリック,#runbtn,,,実行ボタンをクリック
+7,待機,#iframeResult,,,結果フレームが表示されるまで待機
+8,closewindow,Tryit Editor,,,「Tryit Editor」ウィンドウを閉じる
+9,window,HTML Examples,,,「HTML Examples」タイトルの元ウィンドウに戻る
+10,確認,title,HTML Examples,,元のページに戻ったことを確認

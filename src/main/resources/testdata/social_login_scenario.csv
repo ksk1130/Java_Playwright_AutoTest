@@ -1,0 +1,25 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://auth0.com/docs/authenticate/login/auth0-universal-login,,,"Auth0ログインデモページにアクセス"
+2,クリック,.btn-primary,,,「Login」ボタンをクリック
+3,newwindow,Auth0,,,「Auth0」タイトルのログインウィンドウに切り替え
+4,確認,.auth0-lock,visible,,Auth0ログインフォームが表示されていることを確認
+5,入力,input[name='email'],test@example.com,,メールアドレスを入力
+6,入力,input[name='password'],testpassword123,,パスワードを入力
+7,スクリーンショット,auth0_login_form,,,ログインフォームをキャプチャ
+8,クリック,.social-login-facebook,,,「Continue with Facebook」ボタンをクリック
+9,newwindow,Facebook,,,「Facebook」タイトルのFacebookログインウィンドウに切り替え
+10,確認,title,Facebook,,Facebookログインページであることを確認
+11,入力,#email,testuser@facebook.com,,Facebookメールアドレスを入力
+12,入力,#pass,facebookpassword,,Facebookパスワードを入力
+13,スクリーンショット,facebook_login,,,Facebookログイン画面をキャプチャ
+14,closewindow,Facebook,,,Facebookログインウィンドウを閉じる（実際のログインはしない）
+15,window,Auth0,,,Auth0ログインウィンドウに戻る
+16,クリック,.social-login-google,,,「Continue with Google」ボタンをクリック
+17,newwindow,Google,,,「Google」タイトルのGoogleログインウィンドウに切り替え
+18,確認,title,Google,,Googleログインページであることを確認
+19,スクリーンショット,google_login,,,Googleログイン画面をキャプチャ
+20,closewindow,Google,,,Googleログインウィンドウを閉じる
+21,window,Auth0,,,Auth0ログインウィンドウに戻る
+22,closewindow,Auth0,,,Auth0ログインウィンドウを閉じる
+23,window,Auth0 Docs,,,元のAuth0ドキュメントページに戻る
+24,確認,title,Auth0,,元のページに戻ったことを確認

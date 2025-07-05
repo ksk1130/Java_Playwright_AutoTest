@@ -64,9 +64,9 @@ public class TestActionExecutor {
                 case "screenshot", "スクリーンショット", "画面キャプチャ" -> takeScreenshot(element); // スクショ
                 case "iframe", "アイフレーム", "フレーム" -> switchToIframe(element); // iframe切替
                 case "main", "メイン", "親フレーム" -> switchToMainFrame(); // メインフレーム復帰
-                case "newwindow", "新しいウィンドウ", "ポップアップ" -> switchToNewWindow(); // 新規ウィンドウ切替
-                case "closewindow", "ウィンドウを閉じる", "ポップアップを閉じる" -> closeCurrentWindow(); // ウィンドウ閉じる
-                case "window", "ウィンドウ", "ウィンドウ切り替え" -> switchToWindow(inputValue); // 指定ウィンドウ切替
+                case "newwindow", "新しいウィンドウ", "ポップアップ" -> switchToNewWindow(element); // 新規ウィンドウ切替
+                case "closewindow", "ウィンドウを閉じる", "ポップアップを閉じる" -> closeWindow(element); // ウィンドウ閉じる
+                case "window", "ウィンドウ", "ウィンドウ切り替え" -> switchToWindow(element != null && !element.trim().isEmpty() ? element : inputValue); // 指定ウィンドウ切替
                 default -> logger.warn("Unknown action: " + action);
             }
         } catch (Exception e) {
@@ -863,8 +863,10 @@ public class TestActionExecutor {
 
     /**
      * 新しく開いたウィンドウに切り替える
+     * 
+     * @param expectedWindowTitle 期待するウィンドウタイトル（省略可）
      */
-    private void switchToNewWindow() {
+    private void switchToNewWindow(String expectedWindowTitle) {
         try {
             // 新しいページ（ウィンドウ）が開かれるまで待機
             Page newPage = page.context().waitForPage(() -> {
@@ -872,11 +874,16 @@ public class TestActionExecutor {
             });
 
             if (newPage != null) {
+                // ウィンドウタイトルが指定されている場合は、そのタイトルを待機
+                if (expectedWindowTitle != null && !expectedWindowTitle.trim().isEmpty()) {
+                    waitForWindowTitle(newPage, expectedWindowTitle);
+                }
+                
                 windowHandles.add(newPage);
                 this.page = newPage;
                 currentWindowIndex = windowHandles.size() - 1;
                 currentIframeSelector = null; // 新しいウィンドウではiframeをリセット
-                logger.info("Switched to new window (index: " + currentWindowIndex + ")");
+                logger.info("Switched to new window (index: " + currentWindowIndex + ", title: " + newPage.title() + ")");
             } else {
                 throw new RuntimeException("No new window was opened");
             }
@@ -886,6 +893,12 @@ public class TestActionExecutor {
             if (allPages.size() > windowHandles.size()) {
                 // 新しいページが見つかった
                 Page newPage = allPages.get(allPages.size() - 1);
+                
+                // ウィンドウタイトルが指定されている場合は、そのタイトルを待機
+                if (expectedWindowTitle != null && !expectedWindowTitle.trim().isEmpty()) {
+                    waitForWindowTitle(newPage, expectedWindowTitle);
+                }
+                
                 windowHandles.add(newPage);
                 this.page = newPage;
                 currentWindowIndex = windowHandles.size() - 1;
@@ -942,35 +955,112 @@ public class TestActionExecutor {
     }
 
     /**
-     * 現在のウィンドウを閉じて前のウィンドウに戻る
+     * 指定されたウィンドウを閉じる
+     * 
+     * @param windowIdentifier ウィンドウ識別子（タイトルまたはインデックス、nullの場合は現在のウィンドウ）
      */
-    private void closeCurrentWindow() {
+    private void closeWindow(String windowIdentifier) {
         try {
             if (windowHandles.size() <= 1) {
                 logger.info("Cannot close the last window");
                 return;
             }
 
-            // 現在のウィンドウを閉じる
-            page.close();
+            int windowIndexToClose = currentWindowIndex; // デフォルトは現在のウィンドウ
 
-            // ウィンドウリストから削除
-            windowHandles.remove(currentWindowIndex);
-
-            // 前のウィンドウに切り替え
-            if (currentWindowIndex > 0) {
-                currentWindowIndex--;
-            } else {
-                currentWindowIndex = 0;
+            // ウィンドウ識別子が指定されている場合は、そのウィンドウを検索
+            if (windowIdentifier != null && !windowIdentifier.trim().isEmpty()) {
+                windowIndexToClose = findWindowIndex(windowIdentifier);
+                if (windowIndexToClose == -1) {
+                    throw new RuntimeException("Window not found: " + windowIdentifier);
+                }
             }
 
-            this.page = windowHandles.get(currentWindowIndex);
-            currentIframeSelector = null;
+            // 指定されたウィンドウを閉じる
+            Page windowToClose = windowHandles.get(windowIndexToClose);
+            windowToClose.close();
 
-            logger.info("Closed window and switched to window index: " + currentWindowIndex);
+            // ウィンドウリストから削除
+            windowHandles.remove(windowIndexToClose);
+
+            // 現在のウィンドウが閉じられた場合は、前のウィンドウに切り替え
+            if (windowIndexToClose == currentWindowIndex) {
+                if (currentWindowIndex > 0) {
+                    currentWindowIndex--;
+                } else {
+                    currentWindowIndex = 0;
+                }
+                this.page = windowHandles.get(currentWindowIndex);
+                currentIframeSelector = null;
+            } else if (windowIndexToClose < currentWindowIndex) {
+                // 現在のウィンドウより前のウィンドウが閉じられた場合はインデックスを調整
+                currentWindowIndex--;
+            }
+
+            logger.info("Closed window: " + windowIdentifier + ", current window index: " + currentWindowIndex);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to close current window", e);
+            throw new RuntimeException("Failed to close window: " + windowIdentifier, e);
+        }
+    }
+
+    /**
+     * ウィンドウ識別子からウィンドウインデックスを取得
+     * 
+     * @param windowIdentifier ウィンドウ識別子（インデックスまたはタイトル）
+     * @return ウィンドウインデックス（見つからない場合は-1）
+     */
+    private int findWindowIndex(String windowIdentifier) {
+        // 数字の場合はインデックスとして処理
+        try {
+            int index = Integer.parseInt(windowIdentifier.trim());
+            if (index >= 0 && index < windowHandles.size()) {
+                return index;
+            }
+        } catch (NumberFormatException e) {
+            // 数字ではない場合はタイトルとして処理
+        }
+
+        // タイトルで検索
+        for (int i = 0; i < windowHandles.size(); i++) {
+            Page windowPage = windowHandles.get(i);
+            String title = windowPage.title();
+            if (title != null && title.toLowerCase().contains(windowIdentifier.toLowerCase())) {
+                return i;
+            }
+        }
+
+        return -1; // 見つからない
+    }
+
+    /**
+     * 現在のウィンドウを閉じて前のウィンドウに戻る（下位互換性のため）
+     */
+    private void closeCurrentWindow() {
+        closeWindow(null);
+    }
+
+    /**
+     * 指定されたウィンドウタイトルを待機する
+     * 
+     * @param targetPage 対象のページ
+     * @param expectedTitle 期待するタイトル（部分一致）
+     */
+    private void waitForWindowTitle(Page targetPage, String expectedTitle) {
+        try {
+            // 最大10秒間、ウィンドウタイトルを待機
+            for (int i = 0; i < 100; i++) {
+                String currentTitle = targetPage.title();
+                if (currentTitle != null && currentTitle.toLowerCase().contains(expectedTitle.toLowerCase())) {
+                    logger.info("Window title matched: " + currentTitle);
+                    return;
+                }
+                Thread.sleep(100); // 100ms待機
+            }
+            logger.warn("Window title did not match expected: " + expectedTitle + ", actual: " + targetPage.title());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting for window title", e);
         }
     }
 }

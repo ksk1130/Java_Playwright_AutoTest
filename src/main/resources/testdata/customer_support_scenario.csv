@@ -1,0 +1,26 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://www.zendesk.com/demo,,,"Zendeskデモサイトにアクセス"
+2,クリック,"a[href*='help']",,,ヘルプリンクをクリック
+3,newwindow,Help Center,,,「Help Center」タイトルのヘルプウィンドウに切り替え
+4,確認,title,Help,,ヘルプセンターであることを確認
+5,入力,.search-box,troubleshooting,,検索ボックスに「troubleshooting」を入力
+6,クリック,.search-button,,,検索ボタンをクリック
+7,スクリーンショット,help_search_results,,,ヘルプ検索結果をキャプチャ
+8,window,Zendesk,,,元のサイトに戻る
+9,クリック,.chat-button,,,チャットボタンをクリック
+10,newwindow,Customer Chat,,,「Customer Chat」タイトルのチャットウィンドウに切り替え
+11,確認,.chat-widget,visible,,チャットウィジェットが表示されていることを確認
+12,入力,.chat-input,こんにちは、質問があります,,チャットにメッセージを入力
+13,クリック,.send-button,,,送信ボタンをクリック
+14,待機,.chat-response,,,チャット応答を待機
+15,スクリーンショット,chat_conversation,,,チャット会話をキャプチャ
+16,window,Help Center,,,ヘルプセンターウィンドウに切り替え
+17,クリック,.article-link,,,記事リンクをクリック
+18,確認,.article-content,visible,,記事内容が表示されていることを確認
+19,closewindow,Help Center,,,ヘルプセンターウィンドウを閉じる
+20,window,Customer Chat,,,チャットウィンドウに戻る
+21,入力,.chat-input,ありがとうございました,,お礼メッセージを入力
+22,クリック,.send-button,,,送信ボタンをクリック
+23,closewindow,Customer Chat,,,チャットウィンドウを閉じる
+24,window,Zendesk,,,元のZendeskサイトに戻る
+25,確認,title,Zendesk,,元のサイトに戻ったことを確認

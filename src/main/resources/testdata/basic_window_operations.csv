@@ -1,0 +1,16 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://the-internet.herokuapp.com/windows,,,"The Internet - Windowsテストページにアクセス"
+2,確認,title,The Internet,,正しいページであることを確認
+3,クリック,"a[href='/windows/new']",,,「Click Here」リンクをクリックして新しいウィンドウを開く
+4,newwindow,New Window,,,「New Window」タイトルの新しいウィンドウに切り替え
+5,確認,title,New Window,,新しいウィンドウのタイトルを確認
+6,確認,h3,New Window,,新しいウィンドウのヘッダーテキストを確認
+7,スクリーンショット,new_window_content,,,新しいウィンドウの内容をキャプチャ
+8,window,The Internet,,,元のウィンドウ（「The Internet」）に戻る
+9,確認,title,The Internet,,元のウィンドウに戻ったことを確認
+10,確認,h3,Opening a new window,,元のページのヘッダーテキストを確認
+11,window,New Window,,,再び新しいウィンドウに切り替え
+12,closewindow,New Window,,,「New Window」ウィンドウを閉じる
+13,window,The Internet,,,元のウィンドウに戻る
+14,スクリーンショット,back_to_original,,,元のウィンドウに戻った状態をキャプチャ
+15,確認,title,The Internet,,テスト完了の確認

@@ -1,0 +1,24 @@
+ステップ,アクション,要素,入力値,期待結果,説明
+1,アクセス,https://demo.opencart.com,,,"OpenCartデモサイトにアクセス"
+2,クリック,.btn-inverse,,,カートボタンをクリック
+3,ホバー,"a[title='Desktop']",,,デスクトップメニューにホバー
+4,クリック,"a[href*='desktop/pc']",,,PCカテゴリをクリック
+5,クリック,.product-thumb .image a,,,最初の商品をクリック
+6,クリック,#button-cart,,,カートに追加ボタンをクリック
+7,待機,.alert-success,,,成功メッセージが表示されるまで待機
+8,クリック,.btn-inverse,,,カートボタンをクリック
+9,クリック,"a[href*='checkout']",,,チェックアウトボタンをクリック
+10,アクセス,https://js.stripe.com/v3/buy-button-publisher-test.html,,,"Stripeテストページ（決済ウィンドウテスト用）にアクセス"
+11,クリック,#checkout-button,,,チェックアウトボタンをクリック
+12,newwindow,Stripe Checkout,,,「Stripe Checkout」タイトルの決済ウィンドウに切り替え
+13,確認,title,Stripe,,Stripe決済ページであることを確認
+14,iframe,.StripeCheckout iframe,,,Stripe決済フレームに切り替え
+15,入力,#email,test@example.com,,メールアドレスを入力
+16,入力,#card_number,4242424242424242,,テストカード番号を入力
+17,入力,#cc-exp,12/25,,有効期限を入力
+18,入力,#cc-csc,123,,CVC番号を入力
+19,main,,,,,メインフレームに戻る
+20,スクリーンショット,payment_form,,,決済フォーム画面をキャプチャ
+21,closewindow,Stripe,,,Stripe決済ウィンドウを閉じる
+22,window,OpenCart,,,元のショッピングサイトに戻る
+23,確認,title,OpenCart,,元のサイトに戻ったことを確認
